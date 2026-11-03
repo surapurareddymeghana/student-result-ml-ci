@@ -1,4 +1,4 @@
-
+from flask import Flask, request, jsonify
 from pathlib import Path
 
 import joblib
@@ -70,7 +70,9 @@ def predict():
         "prediction": prediction,
         "prediction_code": prediction_code
     })
-
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
