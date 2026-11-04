@@ -1,3 +1,4 @@
+
 name: Build, Test and Publish Student Result Prediction
 
 on:
@@ -68,7 +69,7 @@ jobs:
           docker tag $IMAGE_NAME:ci $IMAGE_ID:latest
           docker tag $IMAGE_NAME:ci $IMAGE_ID:sha-${{ github.sha }}
 
-      - name: Push tested image to GHCR
+            - name: Push tested image to GHCR
         run: |
           docker push $IMAGE_ID:latest
           docker push $IMAGE_ID:sha-${{ github.sha }}
