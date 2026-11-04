@@ -35,7 +35,7 @@ jobs:
       - name: Test API health endpoint
         run: |
           for attempt in {1..20}; do
-            if curl --fail --silent http://localhost:5000/; then
+            if curl --fail --silent http://localhost:5000/health; then
               echo "Health check passed."
               exit 0
             fi
@@ -44,6 +44,21 @@ jobs:
           done
 
           echo "Health check failed."
+          docker logs student-result-ci
+          exit 1
+
+      - name: Test Prometheus metrics endpoint
+        run: |
+          for attempt in {1..20}; do
+            if curl --fail --silent http://localhost:5000/metrics | grep -q "student_api_model_loaded"; then
+              echo "Prometheus metrics check passed."
+              exit 0
+            fi
+            echo "Waiting for metrics..."
+            sleep 3
+          done
+
+          echo "Metrics check failed."
           docker logs student-result-ci
           exit 1
 
@@ -69,7 +84,7 @@ jobs:
           docker tag $IMAGE_NAME:ci $IMAGE_ID:latest
           docker tag $IMAGE_NAME:ci $IMAGE_ID:sha-${{ github.sha }}
 
-            - name: Push tested image to GHCR
+      - name: Push tested image to GHCR
         run: |
           docker push $IMAGE_ID:latest
           docker push $IMAGE_ID:sha-${{ github.sha }}
